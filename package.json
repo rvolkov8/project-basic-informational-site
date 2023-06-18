@@ -1,0 +1,19 @@
+{
+  "name": "project-basic-informational-site",
+  "version": "1.0.0",
+  "description": "This is my first node.js project.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "prettier": "^2.8.8"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
