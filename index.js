@@ -1,35 +1,46 @@
-const http = require("http");
 const path = require("path");
 const fs = require("fs");
+const express = require("express");
+const app = express();
 
-const server = http.createServer((req, res) => {
-  const filePath = path.join(
-    __dirname,
-    "pages",
-    req.url === "/" ? "index.html" : `${req.url}.html`
-  );
-  fs.readFile(filePath, (err, content) => {
+app.get("/", (req, res) => {
+  const filePath = path.join(__dirname, "pages", "index.html");
+  fs.readFile(filePath, "utf8", (err, content) => {
     if (err) {
-      if (err.code === "ENOENT") {
-        fs.readFile(
-          path.join(__dirname, "pages", "404.html"),
-          (err, content) => {
-            res.writeHead(404, { "Content-Type": "text/html" });
-            res.end(content, "utf8");
-          }
-        );
-      } else {
-        res.writeHead(500, { "Content-Type": "text/plain" });
-        res.end("Internal Server Error");
-      }
+      console.log(err);
+      res.status(500).send("Internal Server Error");
     } else {
-      // Success
-      res.writeHead(200, { "Content-Type": "text/html" });
-      res.end(content, "utf8");
+      res.set({ "Content-Type": "text/html" });
+      res.status(200).send(content);
     }
   });
 });
 
-server.listen(8080, () => {
+app.get("/:page", (req, res) => {
+  const filePath = path.join(__dirname, "pages", `${req.url}.html`);
+  fs.readFile(filePath, "utf8", (err, content) => {
+    if (err) {
+      if (err.code === "ENOENT") {
+        res.set({ "Content-Type": "text/html" });
+        fs.readFile(
+          path.join(__dirname, "pages", "404.html"),
+          "utf8",
+          (err, content) => {
+            res.set({ "Content-Type": "text/html" });
+            res.status(404).send(content);
+          }
+        );
+      } else {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      }
+    } else {
+      res.set({ "Content-Type": "text/html" });
+      res.status(200).send(content);
+    }
+  });
+});
+
+app.listen(8080, () => {
   console.log("Server is running on 8080 port");
 });
